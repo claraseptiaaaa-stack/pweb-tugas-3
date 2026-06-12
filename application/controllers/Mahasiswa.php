@@ -5,9 +5,6 @@ class Mahasiswa extends CI_Controller {
     public function __construct()
 	{
 		parent::__construct();
-		if (!$this->session->userdata('user')) {
-			redirect('auth', 'refresh');
-		}
 
 		$this->load->model('MahasiswaModel');
 	}
@@ -22,34 +19,43 @@ class Mahasiswa extends CI_Controller {
 		$this->load->view('layout/footer');
 	}
 
+	public function about()
+{
+    $header['title'] = "About";
+
+    $this->load->view('layout/header', $header);
+    $this->load->view('mahasiswa/about');
+    $this->load->view('layout/footer');
+}
+
+public function service()
+{
+    $header['title'] = "Service";
+
+    $this->load->view('layout/header', $header);
+    $this->load->view('mahasiswa/service');
+    $this->load->view('layout/footer');
+}
+
+public function contact()
+{
+    $header['title'] = "Contact";
+
+    $this->load->view('layout/header', $header);
+    $this->load->view('mahasiswa/contact');
+    $this->load->view('layout/footer');
+}
+
 	public function tambah()
 	{
 		if ($this->input->post()) {
-			$this->form_validation->set_rules('mahasiswa_nim', 'NIM', 'required|numeric|min_length[10]|max_length[12]');
-			$this->form_validation->set_rules('mahasiswa_nama', 'Nama', 'required|min_length[3]|max_length[100]');
-			$this->form_validation->set_rules('mahasiswa_email', 'Email', 'required|valid_email');
-			$this->form_validation->set_rules('mahasiswa_password', 'Password', 'required|min_length[5]');
+			$data = [
+				'mahasiswa_nim' => $this->input->post('mahasiswa_nim', true),
+				'mahasiswa_nama' => $this->input->post('mahasiswa_nama', true),
+			];
 
-			if ($this->form_validation->run() === TRUE) {
-				$formulir = $this->input->post();
-
-				$data = [
-					'mahasiswa_nim' => $formulir['mahasiswa_nim'],
-					'mahasiswa_nama' => $formulir['mahasiswa_nama'],
-					'mahasiswa_email' => $formulir['mahasiswa_email'],
-					'mahasiswa_password' => sha1($formulir['mahasiswa_password']),
-				];
-
-				$this->MahasiswaModel->insert($data);
-				
-				$this->session->set_flashdata('swal', [
-					'icon' => 'success',
-					'title' => 'Berhasil!',
-					'text' => 'Data mahasiswa berhasil ditambahkan.'
-				]);
-
-				redirect('mahasiswa');
-			}
+			$this->MahasiswaModel->insert($data);
+			redirect('mahasiswa');
 		}
 
 		$data['mahasiswa'] = null;
@@ -67,46 +73,17 @@ class Mahasiswa extends CI_Controller {
 		$mahasiswa = $this->MahasiswaModel->getById($id);
 
 		if (!$mahasiswa) {
-			$this->session->set_flashdata('swal', [
-				'icon' => 'warning',
-				'title' => 'Tidak Ditemukan!',
-				'text' => 'Data mahasiswa tidak ditemukan.'
-			]);
-
-			redirect('mahasiswa');
+			show_404();
 		}
 
 		if ($this->input->post()) {
-			$this->form_validation->set_rules('mahasiswa_nim', 'NIM', 'required|numeric|min_length[10]|max_length[12]');
-			$this->form_validation->set_rules('mahasiswa_nama', 'Nama', 'required|min_length[3]|max_length[100]');
-			$this->form_validation->set_rules('mahasiswa_email', 'Email', 'required|valid_email');
-			$this->form_validation->set_rules('mahasiswa_password', 'Password', 'min_length[5]');
+			$data = [
+				'mahasiswa_nim' => $this->input->post('mahasiswa_nim', true),
+				'mahasiswa_nama' => $this->input->post('mahasiswa_nama', true),
+			];
 
-			if ($this->form_validation->run() === TRUE) {
-				$formulir = $this->input->post();
-
-				$data = [
-					'mahasiswa_nim' => $formulir['mahasiswa_nim'],
-					'mahasiswa_nama' => $formulir['mahasiswa_nama'],
-					'mahasiswa_email' => $formulir['mahasiswa_email'],
-				];
-
-				if (!empty($formulir['mahasiswa_password'])) {
-					$data['mahasiswa_password'] = sha1($formulir['mahasiswa_password']);
-				}
-
-				$this->MahasiswaModel->update($id, $data);
-				
-				$this->session->set_flashdata('swal', [
-					'icon' => 'success',
-					'title' => 'Berhasil!',
-					'text' => 'Data mahasiswa berhasil diupdate.'
-				]);
-
-				redirect('mahasiswa');
-			}
-
-			$mahasiswa = $this->input->post();
+			$this->MahasiswaModel->update($id, $data);
+			redirect('mahasiswa');
 		}
 
 		$data['mahasiswa'] = $mahasiswa;
@@ -121,26 +98,7 @@ class Mahasiswa extends CI_Controller {
 
 	public function hapus($id)
 	{
-		$mahasiswa = $this->MahasiswaModel->getById($id);
-
-		if (!$mahasiswa) {
-			$this->session->set_flashdata('swal', [
-				'icon' => 'warning',
-				'title' => 'Tidak Ditemukan!',
-				'text' => 'Data mahasiswa tidak ditemukan.'
-			]);
-
-			redirect('mahasiswa');
-		}
-
 		$this->MahasiswaModel->delete($id);
-
-		$this->session->set_flashdata('swal', [
-			'icon' => 'warning',
-			'title' => 'Dihapus!',
-			'text' => 'Data mahasiswa berhasil dihapus.'
-		]);
-
 		redirect('mahasiswa');
 	}
 }

@@ -13,28 +13,48 @@
 						<td>No.</td>
 						<td>NIM</td>
 						<td>Nama</td>
-						<td>Email</td>
 						<td>Aksi</td>
 					</tr>
 				</thead>
 				<tbody>
-                    <?php foreach ($mahasiswa as $key => $value): ?>
-                        <tr>
-                            <td><?php echo $key+1 ?>.</td>
-                            <td><?php echo $value['mahasiswa_nim'] ?></td>
-                            <td><?php echo $value['mahasiswa_nama'] ?></td>
-                            <td><?php echo $value['mahasiswa_email'] ?></td>
-                            <td>
-                                <a class="btn btn-warning btn-sm" href="<?php echo base_url('mahasiswa/ubah/'.$value['mahasiswa_id']) ?>">
-									<i class="bi bi-pencil-square"></i>
-								</a>
-								<a class="btn btn-danger btn-sm btn-hapus" href="<?php echo base_url('mahasiswa/hapus/'.$value['mahasiswa_id']) ?>">
-									<i class="bi bi-trash"></i>
-								</a>
-                            </td>
-                        </tr>
-                    <?php endforeach ?>
-				</tbody>
+
+<?php if(!empty($mahasiswa)): ?>
+    <?php $no = 1; ?>
+
+    <?php foreach($mahasiswa as $row): ?>
+
+    <tr>
+        <td><?= $no++ ?></td>
+        <td><?= $row['nim'] ?></td>
+        <td><?= $row['nama'] ?></td>
+
+        <td>
+            <a href="<?= base_url('mahasiswa/edit/'.$row['id']) ?>"
+               class="btn btn-warning btn-sm">
+               Edit
+            </a>
+
+            <a href="<?= base_url('mahasiswa/hapus/'.$row['id']) ?>"
+               class="btn btn-danger btn-sm"
+               onclick="return confirm('Yakin hapus data?')">
+               Hapus
+            </a>
+        </td>
+    </tr>
+
+    <?php endforeach; ?>
+
+<?php else: ?>
+
+    <tr>
+        <td colspan="4" class="text-center text-muted">
+            Belum ada data mahasiswa.
+        </td>
+    </tr>
+
+<?php endif; ?>
+
+</tbody>
 			</table>
 		</div>
 	</div>
